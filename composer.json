@@ -1,24 +1,25 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "mystamystinc/model-policy-generator",
+    "description": "This is a package that creates policies for all the existing models in the project. It is customizable and easy to use.",
     "keywords": [
-        ":vendor_name",
+        "Gitonga George",
         "laravel",
-        ":package_slug"
+        "model-policy-generator"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/mystamystinc/model-policy-generator",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Gitonga George",
+            "email": "gitongaeden@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.2",
+        "illuminate/contracts": "^10.0||^11.0",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0"
+        "spatie/php-structure-discoverer": "^2.1"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,19 +36,19 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "MystamystInc\\ModelPolicyGenerator\\": "src/",
+            "MystamystInc\\ModelPolicyGenerator\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "MystamystInc\\ModelPolicyGenerator\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
     "scripts": {
         "post-autoload-dump": "@composer run prepare",
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "clear": "@php vendor/bin/testbench package:purge-model-policy-generator --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": [
             "@composer run prepare",
@@ -73,10 +74,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "MystamystInc\\ModelPolicyGenerator\\ModelPolicyGeneratorServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "ModelPolicyGenerator": "MystamystInc\\ModelPolicyGenerator\\Facades\\ModelPolicyGenerator"
             }
         }
     },
