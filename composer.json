@@ -4,9 +4,11 @@
     "keywords": [
         "Gitonga George",
         "laravel",
-        "model-policy-generator"
+        "model",
+        "policy",
+        "generator"
     ],
-    "homepage": "https://github.com/mystamystinc/model-policy-generator",
+    "homepage": "https://github.com/GitongaGeorge/mystamyst",
     "license": "MIT",
     "authors": [
         {
@@ -17,6 +19,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "codedge/laravel-selfupdater": "^3.8",
         "illuminate/contracts": "^10.0||^11.0",
         "illuminate/support": "^11.3",
         "spatie/laravel-package-tools": "^1.16",
