@@ -51,6 +51,7 @@ class ModelPolicyGeneratorCommand extends Command
     {
         $policyTemplate = $this->loadPolicyTemplate();
         $policyMethods = '';
+        $policiesDirectory = config('model-policy-generator.policies_directory');
 
         if (!is_null($permissions) && is_array($permissions)) {
             foreach ($permissions as $permission) {
@@ -61,7 +62,7 @@ class ModelPolicyGeneratorCommand extends Command
         $policy = str_replace(['{{modelName}}', '{{policyMethods}}'], [$modelName, $policyMethods], $policyTemplate);
 
         // Put the generated policy in the policies directory
-        File::put(app_path('Policies/' . '/' . $policyName . '.php'), $policy);
+        File::put(base_path($policiesDirectory . '/' . $policyName . '.php'), $policy);
     }
 
     protected function loadPolicyTemplate()
