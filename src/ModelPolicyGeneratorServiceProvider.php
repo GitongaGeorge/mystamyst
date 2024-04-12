@@ -18,8 +18,12 @@ class ModelPolicyGeneratorServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('model-policy-generator')
-            ->hasConfigFile() 
-            ->hasInstallCommand(InstallModelPolicyGenerator::class)
-            ->hasCommand(ModelPolicyGeneratorCommand::class);
+            ->hasConfigFile()
+            ->hasCommands(
+                [
+                    ModelPolicyGeneratorCommand::class,
+                    InstallModelPolicyGenerator::class
+                ]
+            );
     }
 }
