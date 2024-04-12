@@ -13,6 +13,17 @@ class ModelPolicyGeneratorCommand extends Command
 
     public function handle()
     {
+
+        $configPath = __DIR__ . '/../config/model-policy-generator.php';
+        $this->publishes([
+            $configPath => config_path('model-policy-generator.php'),
+        ], 'model-policy-generator-config');
+
+        $this->mergeConfigFrom($configPath, 'model-policy-generator');
+
+        if (!File::exists(config_path('model-policy-generator.php'))) {
+            File::copy($configPath, config_path('model-policy-generator.php'));
+        }
         $modelsDirectory = config('model-policy-generator.models_directory');
         $policiesDirectory = config('model-policy-generator.policies_directory');
         $permissions = config('model-policy-generator.permissions'); // Provide default permissions if config value is null
@@ -51,7 +62,6 @@ class ModelPolicyGeneratorCommand extends Command
     {
         $policyTemplate = $this->loadPolicyTemplate();
         $policyMethods = '';
-        $policiesDirectory = config('model-policy-generator.policies_directory');
 
         if (!is_null($permissions) && is_array($permissions)) {
             foreach ($permissions as $permission) {
@@ -62,7 +72,7 @@ class ModelPolicyGeneratorCommand extends Command
         $policy = str_replace(['{{modelName}}', '{{policyMethods}}'], [$modelName, $policyMethods], $policyTemplate);
 
         // Put the generated policy in the policies directory
-        File::put(base_path($policiesDirectory . '/' . $policyName . '.php'), $policy);
+        File::put(app_path('Policies/' . '/' . $policyName . '.php'), $policy);
     }
 
     protected function loadPolicyTemplate()
