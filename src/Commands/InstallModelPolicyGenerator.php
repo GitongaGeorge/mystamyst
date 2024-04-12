@@ -28,16 +28,11 @@ class InstallModelPolicyGenerator extends Command
      */
     public function handle()
     {
-        $configPath = __DIR__ . '/../../../config/model-policy-generator.php';
+        $configPath = __DIR__ . '/../../config/model-policy-generator.php';
+        $targetPath = config_path('model-policy-generator.php');
 
-        $this->publishes([
-            $configPath => config_path('model-policy-generator.php'),
-        ], 'model-policy-generator-config');
-
-        $this->mergeConfigFrom($configPath, 'model-policy-generator');
-
-        if (!File::exists(config_path('model-policy-generator.php'))) {
-            File::copy($configPath, config_path('model-policy-generator.php'));
+        if (!File::exists($targetPath)) {
+            File::copy($configPath, $targetPath);
             $this->info('Model Policy Generator configuration file published successfully.');
         } else {
             $this->comment('Model Policy Generator configuration file already exists.');
