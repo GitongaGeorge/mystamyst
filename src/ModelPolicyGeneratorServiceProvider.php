@@ -2,6 +2,7 @@
 
 namespace MystamystInc\ModelPolicyGenerator;
 
+use MystamystInc\ModelPolicyGenerator\Commands\InstallModelPolicyGenerator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use MystamystInc\ModelPolicyGenerator\Commands\ModelPolicyGeneratorCommand;
@@ -18,6 +19,7 @@ class ModelPolicyGeneratorServiceProvider extends PackageServiceProvider
         $package
             ->name('model-policy-generator')
             ->hasConfigFile() 
+            ->hasInstallCommand(InstallModelPolicyGenerator::class)
             ->hasCommand(ModelPolicyGeneratorCommand::class);
     }
 }

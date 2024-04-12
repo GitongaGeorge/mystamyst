@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 
 class ModelPolicyGeneratorCommand extends Command
 {
-    protected $signature = 'myst-policy:generate';
+    protected $signature = 'myst:generate';
 
     protected $description = 'Generate model policies with permissions';
 
