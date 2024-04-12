@@ -1,8 +1,9 @@
 {
-    "name": "gitongageorge/mystamyst",
+    "name": "mystamystinc/model-policy-generator",
     "description": "This is a package that creates policies for all the existing models in the project. It is customizable and easy to use.",
     "keywords": [
-        "Gitonga George",
+        "George",
+        "Gitonga",
         "laravel",
         "model",
         "policy",
@@ -40,8 +41,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MystamystInc\\ModelPolicyGenerator\\": "src/",
-            "MystamystInc\\ModelPolicyGenerator\\Database\\Factories\\": "database/factories/"
+            "MystamystInc\\ModelPolicyGenerator\\": "src/"
         }
     },
     "autoload-dev": {
