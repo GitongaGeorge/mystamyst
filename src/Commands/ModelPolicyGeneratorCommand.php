@@ -13,17 +13,6 @@ class ModelPolicyGeneratorCommand extends Command
 
     public function handle()
     {
-
-        $configPath = __DIR__ . '/../config/model-policy-generator.php';
-        $this->publishes([
-            $configPath => config_path('model-policy-generator.php'),
-        ], 'model-policy-generator-config');
-
-        $this->mergeConfigFrom($configPath, 'model-policy-generator');
-
-        if (!File::exists(config_path('model-policy-generator.php'))) {
-            File::copy($configPath, config_path('model-policy-generator.php'));
-        }
         $modelsDirectory = config('model-policy-generator.models_directory');
         $policiesDirectory = config('model-policy-generator.policies_directory');
         $permissions = config('model-policy-generator.permissions'); // Provide default permissions if config value is null
