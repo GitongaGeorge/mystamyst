@@ -4,6 +4,7 @@ namespace MystamystInc\ModelPolicyGenerator\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class ModelPolicyGeneratorCommand extends Command
 {
@@ -13,14 +14,20 @@ class ModelPolicyGeneratorCommand extends Command
 
     public function handle()
     {
-        $modelsDirectory = config('model-policy-generator.models_directory');
-        $policiesDirectory = config('model-policy-generator.policies_directory');
-        $permissions = config('model-policy-generator.permissions'); // Provide default permissions if config value is null
+        $modelsDirectory = config('model-policy-generator.models_directory', 'app/Models');
+        $policiesDirectory = config('model-policy-generator.policies_directory', 'app/Policies');
+        $permissions = config('model-policy-generator.permissions', []);
 
-        // Check if the models directory exists, if not, create it
+        // Ensure we have permissions
+        if (empty($permissions)) {
+            $this->error('No permissions defined in the configuration.');
+            return self::FAILURE;
+        }
+
+        // Check if the models directory exists
         if (!File::isDirectory(base_path($modelsDirectory))) {
-            File::makeDirectory(base_path($modelsDirectory), 0755, true, true);
-            $this->info("Models directory created: {$modelsDirectory}");
+            $this->error("Models directory does not exist: {$modelsDirectory}");
+            return self::FAILURE;
         }
 
         // Check if the policies directory exists, if not, create it
@@ -29,10 +36,11 @@ class ModelPolicyGeneratorCommand extends Command
             $this->info("Policies directory created: {$policiesDirectory}");
         }
 
-        $models = File::allFiles(base_path($modelsDirectory));
+        // Get only files in the direct models directory
+        $modelFiles = File::files(base_path($modelsDirectory));
 
-        foreach ($models as $model) {
-            $modelName = basename($model->getBasename(), '.php');
+        foreach ($modelFiles as $modelFile) {
+            $modelName = $modelFile->getBasename('.php');
             $policyName = $modelName . 'Policy';
             $policyPath = base_path($policiesDirectory . '/' . $policyName . '.php');
 
@@ -44,34 +52,31 @@ class ModelPolicyGeneratorCommand extends Command
             }
         }
 
-        return self::SUCCESS; // Indicate successful execution
+        return self::SUCCESS;
     }
 
     protected function generatePolicy($modelName, $policyName, $permissions)
     {
         $policyTemplate = $this->loadPolicyTemplate();
-        $policyMethods = '';
+        $policyMethods = $this->generatePolicyMethods($modelName, $permissions);
 
-        if (!is_null($permissions) && is_array($permissions)) {
-            foreach ($permissions as $permission) {
-                $policyMethods .= $this->generatePolicyMethod($modelName, $permission);
-            }
-        }
-
-        $policy = str_replace(['{{modelName}}', '{{policyMethods}}'], [$modelName, $policyMethods], $policyTemplate);
+        $policy = str_replace(
+            ['{{modelName}}', '{{policyMethods}}', '{{modelNamespace}}'],
+            [$modelName, $policyMethods, $this->getModelNamespace($modelName)],
+            $policyTemplate
+        );
 
         // Put the generated policy in the policies directory
-        File::put(app_path('Policies/' . '/' . $policyName . '.php'), $policy);
+        File::put(base_path('app/Policies/' . $policyName . '.php'), $policy);
     }
 
     protected function loadPolicyTemplate()
     {
-        // Load your policy template from a file or a string
         return '<?php
 
 namespace App\Policies;
 
-use App\Models\{{modelName}};
+use {{modelNamespace}};
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -79,24 +84,52 @@ class {{modelName}}Policy
 {
     use HandlesAuthorization;
 
-    {{policyMethods}}
+{{policyMethods}}
 }';
+    }
+
+    protected function generatePolicyMethods($modelName, $permissions)
+    {
+        $methods = '';
+        foreach ($permissions as $permission) {
+            $methods .= $this->generatePolicyMethod($modelName, $permission);
+        }
+        return $methods;
     }
 
     protected function generatePolicyMethod($modelName, $permission)
     {
-        $policyMethod = "
-    public function {$permission}_{$modelName}(User \$user, {$modelName} \${$this->getModelVariableName($modelName)})
-    {
-        // Implement your policy logic here
-        return true;
-    }";
+        $methodName = Str::camel($permission);
+        $modelParam = !in_array($permission, ['view_any', 'create', 'delete_any', 'force_delete_any', 'restore_any', 'reorder'])
+            ? ", {$modelName} \${$this->getModelVariableName($modelName)}"
+            : '';
 
-        return $policyMethod;
+        $docBlock = $this->generateDocBlock($permission, $modelName);
+
+        return "
+    {$docBlock}
+    public function {$methodName}(User \$user{$modelParam}): bool
+    {
+        return \$user->can('{$permission}_{$this->getModelVariableName($modelName)}');
+    }
+";
+    }
+
+    protected function generateDocBlock($permission, $modelName)
+    {
+        $action = str_replace('_', ' ', $permission);
+        return "    /**
+     * Determine whether the user can {$action} {$this->getModelVariableName($modelName)}.
+     */";
     }
 
     protected function getModelVariableName($modelName)
     {
         return lcfirst($modelName);
+    }
+
+    protected function getModelNamespace($modelName)
+    {
+        return "App\\Models\\{$modelName}";
     }
 }
